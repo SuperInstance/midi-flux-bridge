@@ -7,6 +7,7 @@
 use crate::{AgentTiming, Cadence};
 
 /// A complete timing schedule for multiple agents, derived from tensor contractions.
+/// A complete timing schedule for multiple agents derived from tensor contractions.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
 pub struct TensorSchedule {
     pub agents: Vec<AgentTiming>,

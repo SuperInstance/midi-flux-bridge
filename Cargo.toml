@@ -1,4 +1,7 @@
 [package]
+rust-version = "1.70"
+readme = "README.md"
+documentation = "https://docs.rs/midi-flux-bridge"
 name = "midi-flux-bridge"
 version = "0.1.0"
 edition = "2024"

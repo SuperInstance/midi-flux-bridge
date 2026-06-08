@@ -6,6 +6,7 @@
 use crate::{Cadence, ConductorState, FluxOp, FluxSchedule};
 
 /// A recorded event from conductor execution.
+/// A recorded event from conductor execution with timestamp.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ConductedEvent {
     pub time_ms: f64,
@@ -13,6 +14,7 @@ pub struct ConductedEvent {
 }
 
 /// The type of event that occurred during execution.
+/// Types of events that occur during FLUX bytecode execution.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum ConductedEventType {
     Wait(f64),
@@ -24,6 +26,7 @@ pub enum ConductedEventType {
 }
 
 /// Result of executing a FLUX schedule.
+/// Result of executing a complete FLUX schedule.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ConductedResult {
     pub events: Vec<ConductedEvent>,

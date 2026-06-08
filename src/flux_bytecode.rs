@@ -6,6 +6,7 @@
 use crate::{Cadence, FluxOp, FluxSchedule};
 
 /// Builder for constructing FLUX bytecode schedules.
+/// Builder for constructing FLUX bytecode schedules using a fluent API.
 #[derive(Debug, Clone)]
 pub struct FluxBuilder {
     ops: Vec<FluxOp>,

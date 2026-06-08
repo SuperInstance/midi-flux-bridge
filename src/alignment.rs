@@ -7,6 +7,7 @@ use crate::AgentTiming;
 use crate::tensor_schedule::TensorSchedule;
 
 /// Result of an alignment check.
+/// Result of checking timing alignment across agents.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
 pub struct AlignmentResult {
     pub aligned: bool,
@@ -15,6 +16,7 @@ pub struct AlignmentResult {
 }
 
 /// Drift information for a single agent.
+/// Drift information for a single agent's timing.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
 pub struct AgentDrift {
     pub agent_id: String,

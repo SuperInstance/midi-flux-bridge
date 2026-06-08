@@ -33,6 +33,7 @@ pub struct AgentTiming {
 }
 
 /// Cadence pattern for an agent's timing.
+/// Cadence pattern: regular interval, custom beat pattern, or reactive timing.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Cadence {
     /// Regular fixed interval in milliseconds.
@@ -44,6 +45,7 @@ pub enum Cadence {
 }
 
 /// A single FLUX timing instruction.
+/// A single FLUX timing instruction (WAIT, SIGNAL, SYNC_BARRIER, etc.).
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum FluxOp {
     /// Wait for the specified duration in milliseconds.
@@ -61,6 +63,7 @@ pub enum FluxOp {
 }
 
 /// A complete FLUX schedule with metadata.
+/// A complete FLUX schedule with instructions and metadata.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct FluxSchedule {
     pub ops: Vec<FluxOp>,

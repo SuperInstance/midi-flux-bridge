@@ -6,6 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A groove template defining swing timing.
+/// A groove template defining swing timing ratios for beat subdivisions.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct GrooveTemplate {
     pub name: String,
