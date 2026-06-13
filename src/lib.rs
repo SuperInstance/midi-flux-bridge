@@ -1,51 +1,113 @@
 //! # midi-flux-bridge
 //!
-//! Bridge between MIDI events and flux-based state propagation in musical agent networks.
+//! Bridges tensor-midi timing schedules to FLUX coordination bytecode.
+//! Agent dialogue timing computed as tensor contractions becomes executable
+//! coordination instructions.
 //!
-//! In the SuperInstance ecosystem, MIDI events are state changes that propagate through
-//! a network of connected modules (instruments, effects, analyzers). This crate bridges
-//! raw MIDI messages to a flux-based state propagation system: each MIDI event becomes
-//! a flux node, connections propagate state changes, and conservation laws constrain
-//! the total energy flowing through the network.
+//! ## Modules
 //!
-//! ## Quick Start
-//!
-//! ```
-//! use midi_flux_bridge::*;
-//!
-//! // Parse a MIDI event from raw bytes
-//! let event = MidiEvent::from_bytes(&[0x90, 0x3C, 0x64], 0.0).unwrap();
-//! assert!(event.is_note_on());
-//!
-//! // Build a flux network
-//! let mut network = FluxNetwork::new();
-//! network.add_node(FluxNode::new(0, "input", 2));
-//! network.add_node(FluxNode::with_transform(1, "output", 2, Transform::Scale(0.5)));
-//! network.connect(Connection::linear(0, 1, 1.0)).unwrap();
-//!
-//! // Track conservation
-//! let mut law = ConservationLaw::from_network(&network, 0.001);
-//!
-//! // Set up routing
-//! let mut router = MidiRouter::new(4, 2);
-//! router.allocate_channel(0, &mut network, Transform::Identity);
-//!
-//! // Route an event
-//! let affected = router.route_event(&event, &mut network).unwrap();
-//! ```
+//! - [`tensor_schedule`] — Import tensor-midi-style timing schedules
+//! - [`flux_bytecode`] — Generate FLUX timing instructions
+//! - [`bridge`] — Core bridge: TensorSchedule → Vec<FluxOp>
+//! - [`conductor`] — Execute FLUX timing bytecode
+//! - [`swing`] — Swing timing computation and groove templates
+//! - [`alignment`] — Agent alignment verification and drift detection
 
-pub mod connection;
-pub mod conservation;
-pub mod error;
-pub mod flux_node;
-pub mod midi_event;
-pub mod network;
-pub mod routing;
+pub mod alignment;
+pub mod bridge;
+pub mod conductor;
+pub mod flux_bytecode;
+pub mod swing;
+pub mod tensor_schedule;
 
-pub use connection::{Connection, ConnectionKind};
-pub use conservation::{ConservationLaw, ConservationResult};
-pub use error::BridgeError;
-pub use flux_node::{FluxNode, Transform};
-pub use midi_event::{MidiEvent, MidiEventKind};
-pub use network::FluxNetwork;
-pub use routing::MidiRouter;
+use serde::{Deserialize, Serialize};
+
+/// Timing parameters for a single agent in the coordination schedule.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct AgentTiming {
+    pub agent_id: String,
+    pub bpm: f64,
+    pub swing: f64,
+    pub offset_ms: f64,
+    pub cadence: Cadence,
+}
+
+/// Cadence pattern for an agent's timing.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum Cadence {
+    /// Regular fixed interval in milliseconds.
+    Regular { interval_ms: f64 },
+    /// Custom beat pattern where each value is a duration in ms.
+    Pattern { beats: Vec<f64> },
+    /// Reactive timing with a minimum gap between responses.
+    Reactive { min_gap_ms: f64 },
+}
+
+/// A single FLUX timing instruction.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum FluxOp {
+    /// Wait for the specified duration in milliseconds.
+    Wait(f64),
+    /// Signal a specific agent to act.
+    Signal(String),
+    /// Synchronization barrier; block until `n` agents have signaled.
+    SyncBarrier(usize),
+    /// Change the tempo to a new BPM.
+    TempoChange(f64),
+    /// Set the cadence for a named agent.
+    CadenceSet(String, Cadence),
+    /// Halt execution.
+    Halt,
+}
+
+/// A complete FLUX schedule with metadata.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct FluxSchedule {
+    pub ops: Vec<FluxOp>,
+    pub total_duration_ms: f64,
+    pub agent_count: usize,
+}
+
+/// Mutable state of the FLUX conductor during execution.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ConductorState {
+    pub time_ms: f64,
+    pub active_agents: Vec<String>,
+    pub pending_barriers: usize,
+    pub current_bpm: f64,
+}
+
+impl ConductorState {
+    /// Create a new conductor state at time zero with the given BPM.
+    pub fn new(bpm: f64) -> Self {
+        Self {
+            time_ms: 0.0,
+            active_agents: Vec::new(),
+            pending_barriers: 0,
+            current_bpm: bpm,
+        }
+    }
+}
+
+impl FluxSchedule {
+    /// Create an empty schedule.
+    pub fn empty() -> Self {
+        Self {
+            ops: Vec::new(),
+            total_duration_ms: 0.0,
+            agent_count: 0,
+        }
+    }
+}
+
+impl Default for FluxSchedule {
+    fn default() -> Self {
+        Self::empty()
+    }
+}
+
+impl Default for ConductorState {
+    fn default() -> Self {
+        Self::new(120.0)
+    }
+}

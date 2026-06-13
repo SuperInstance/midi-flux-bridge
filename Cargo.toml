@@ -2,10 +2,13 @@
 name = "midi-flux-bridge"
 version = "0.1.0"
 edition = "2021"
-description = "Bridge between MIDI events and flux-based state propagation in musical agent networks"
+description = "Bridges tensor-midi timing schedules to FLUX coordination bytecode"
 license = "MIT"
 repository = "https://github.com/SuperInstance/midi-flux-bridge"
-keywords = ["midi", "flux", "bridge", "music", "agents"]
+keywords = ["midi", "tensor", "flux", "timing", "coordination"]
+categories = ["multimedia", "data-structures"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
+
+serde_json = "1"
